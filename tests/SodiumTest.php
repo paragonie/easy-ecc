@@ -19,7 +19,7 @@ class SodiumTest extends TestCase
      */
     public function setUp()
     {
-        $this->ecc = new EasyECC('25519');
+        $this->ecc = new EasyECC('sodium');
     }
 
     /**
