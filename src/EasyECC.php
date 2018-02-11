@@ -95,6 +95,7 @@ class EasyECC
      * @param PrivateKeyInterface $private
      * @param PublicKeyInterface $public
      * @param bool $isClient
+     * @param string $hashAlgo
      * @return string
      * @throws \SodiumException
      * @throws \TypeError
@@ -102,13 +103,18 @@ class EasyECC
     public function keyExchange(
         PrivateKeyInterface $private,
         PublicKeyInterface $public,
-        bool $isClient
+        bool $isClient,
+        string $hashAlgo = ''
     ): string {
         if ($this->curve === 'sodium') {
             $ecdh = new X25519();
             $ecdh->setSenderKey($private);
             $ecdh->setRecipientKey($public);
             return $ecdh->keyExchange($isClient);
+        }
+        if (empty($hashAlgo)) {
+            // Use the default
+            $hashAlgo = $this->hashAlgo;
         }
         $ss = $this->scalarMult($private, $public);
         $derSer = new DerPublicKeySerializer();
@@ -118,13 +124,13 @@ class EasyECC
 
         if ($isClient) {
             return hash(
-                $this->hashAlgo,
+                $hashAlgo,
                 $ss . $sender_pk . $recip_pk,
                 true
             );
         } else {
             return hash(
-                $this->hashAlgo,
+                $hashAlgo,
                 $ss . $recip_pk . $sender_pk,
                 true
             );
