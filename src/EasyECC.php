@@ -74,7 +74,7 @@ class EasyECC
                 $this->hashAlgo = 'sha384';
                 $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
                 break;
-            case '25519':
+            case 'sodium':
                 break;
         }
     }
