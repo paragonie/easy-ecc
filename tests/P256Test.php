@@ -17,7 +17,7 @@ class P256Test extends TestCase
     /**
      * @throws \ParagonIE\EasyECC\Exception\ConfigException
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->ecc = new EasyECC('P256');
     }

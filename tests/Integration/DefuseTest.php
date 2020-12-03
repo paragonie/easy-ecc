@@ -31,7 +31,7 @@ class DefuseTest extends TestCase
     /**
      * @throws ConfigException
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->k256 = new EasyECC('K256');
         $this->p256 = new EasyECC('P256');
