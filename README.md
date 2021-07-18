@@ -27,7 +27,7 @@ $ecc = new EasyECC();
 $alice_sk = $ecc->generatePrivateKey();
 $alice_pk = $alice_sk->getPublicKey();
 
-// Signing a message:
+// Signing a message (with PEM-formatted signatures):
 $message = 'This is extremely simple to use correctly.';
 $signature = $ecc->sign($message, $alice_sk);
 
@@ -95,9 +95,7 @@ $alice_pk_pem = $alice_pk->exportPem();
 // Serialize public key as compressed point (for brevity):
 $alice_pk_cpt = $alice_pk->toString();
 
-// Signing a message (with PEM-formatted signatures):
 $message = 'This is extremely simple to use correctly.';
-
 // Signing a message (with IEEE-P1363-formatted signatures):
 $signature = $ecc->sign($message, $alice_sk, true);
 if (!$ecc->verify($message, $alice_pk, $signature, true)) {
