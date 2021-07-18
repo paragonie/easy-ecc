@@ -39,15 +39,11 @@ class PublicKey extends BasePublicKey
         $adapter = new GmpMath();
         $serializer = new PublicKeyDerParser($adapter);
 
-        $encoded = str_replace('-----BEGIN PUBLIC KEY-----', '', $encoded);
-        $encoded = str_replace('-----END PUBLIC KEY-----', '', $encoded);
+        $encoded = preg_replace('/-----(BEGIN|END) .+? PUBLIC KEY-----/', '', $encoded);
+        $encoded = preg_replace('/[^A-Za-z0-9\+\/]/', '', $encoded);
 
         $data = Base64::decode($encoded);
-        $pk = $serializer->parse($data);
-        if (!($pk instanceof PublicKey)) {
-            throw new \TypeError('Parsed public key MUST be an instance of the inherited class.');
-        }
-        return $pk;
+        return self::promote($serializer->parse($data));
     }
 
     /**
