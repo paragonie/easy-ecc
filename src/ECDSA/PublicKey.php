@@ -4,6 +4,7 @@ namespace ParagonIE\EasyECC\ECDSA;
 
 use FG\ASN1\Exception\ParserException;
 use Mdanter\Ecc\Crypto\Key\PublicKey as BasePublicKey;
+use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Curves\CurveFactory;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Math\GmpMath;
@@ -50,6 +51,17 @@ class PublicKey extends BasePublicKey
     }
 
     /**
+     * Promote an instance of the base public key type to this type.
+     *
+     * @param PublicKeyInterface $key
+     * @return self
+     */
+    public static function promote(PublicKeyInterface $key): self
+    {
+        return new self(EccFactory::getAdapter(), $key->getGenerator(), $key->getPoint());
+    }
+
+    /**
      * @return string
      */
     public function toString(): string
@@ -71,19 +83,19 @@ class PublicKey extends BasePublicKey
      * @param string $curve
      * @return PublicKey
      */
-    public static function fromString(string $hexString, string $curve = EasyECC::DEFAULT_ECDSA_CURVE): self
-    {
+    public static function fromString(
+        string $hexString,
+        string $curve = EasyECC::DEFAULT_ECDSA_CURVE
+    ): self {
+        $adapter = EccFactory::getAdapter();
         switch ($curve) {
             case 'K256':
-                $adapter = EccFactory::getAdapter();
                 $generator = CurveFactory::getGeneratorByName('secp256k1');
                 break;
             case 'P256':
-                $adapter = EccFactory::getAdapter();
                 $generator = EccFactory::getNistCurves()->generator256();
                 break;
             case 'P384':
-                $adapter = EccFactory::getAdapter();
                 $generator = EccFactory::getNistCurves()->generator384();
                 break;
             default:

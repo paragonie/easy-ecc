@@ -2,7 +2,9 @@
 namespace ParagonIE\EasyECC\ECDSA;
 
 use Mdanter\Ecc\Crypto\Key\PrivateKey;
+use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
+use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Math\GmpMath;
 use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
@@ -54,12 +56,20 @@ class SecretKey extends PrivateKey
      */
     public static function importPem(string $encoded): self
     {
-        $adapter = new GmpMath();
         $serializer = new PemPrivateKeySerializer(new DerPrivateKeySerializer());
         $sk = $serializer->parse($encoded);
         if (!($sk instanceof PrivateKey)) {
             throw new \TypeError('Parsed public key MUST be an instance of the inherited class.');
         }
-        return new self($adapter, $sk->getPoint(), $sk->getSecret());
+        return self::promote($sk);
+    }
+
+    /**
+     * @param PrivateKeyInterface $key
+     * @return self
+     */
+    public static function promote(PrivateKeyInterface $key): self
+    {
+        return new self(EccFactory::getAdapter(), $key->getPoint(), $key->getSecret());
     }
 }
