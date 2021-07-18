@@ -15,6 +15,7 @@
   },
   "license": "ISC",
   "autoload": {
+    "files": ["autoload-shim.php"],
     "psr-4": {
       "ParagonIE\\EasyECC\\": "./src"
     }
