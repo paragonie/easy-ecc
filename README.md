@@ -1,6 +1,6 @@
 # Easy-ECC
 
-[![Build Status](https://travis-ci.org/paragonie/easy-ecc.svg?branch=master)](https://travis-ci.org/paragonie/easy-ecc)
+[![Build Status](https://github.com/paragonie/easy-ecc/actions/workflows/ci.yml/badge.svg)](https://github.com/paragonie/easy-ecc/actions)
 [![Latest Stable Version](https://poser.pugx.org/paragonie/easy-ecc/v/stable)](https://packagist.org/packages/paragonie/easy-ecc)
 [![Latest Unstable Version](https://poser.pugx.org/paragonie/easy-ecc/v/unstable)](https://packagist.org/packages/paragonie/easy-ecc)
 [![License](https://poser.pugx.org/paragonie/easy-ecc/license)](https://packagist.org/packages/paragonie/easy-ecc)

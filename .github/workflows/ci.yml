@@ -19,7 +19,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, intl, sodium
+          extensions: gmp, mbstring, intl, sodium
           ini-values: post_max_size=256M, max_execution_time=180
           tools: psalm, phpunit:${{ matrix.phpunit-versions }}
 
@@ -33,7 +33,7 @@ jobs:
         uses: php-actions/phpunit@v2
         timeout-minutes: 30
         with:
-          memory_limit: 256M
+          memory_limit: 512M
 
       - name: Static Analysis
         run: vendor/bin/psalm
@@ -54,7 +54,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, intl, sodium
+          extensions: gmp, mbstring, intl, sodium
           ini-values: post_max_size=256M, max_execution_time=180
           tools: psalm, phpunit:${{ matrix.phpunit-versions }}
 
@@ -64,7 +64,7 @@ jobs:
         uses: php-actions/phpunit@v2
         timeout-minutes: 30
         with:
-          memory_limit: 256M
+          memory_limit: 512M
 
       - name: Static Analysis
         run: vendor/bin/psalm
