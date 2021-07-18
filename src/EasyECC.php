@@ -18,7 +18,10 @@ use Mdanter\Ecc\Util\NumberSize;
 use ParagonIE\EasyECC\Curve25519\EdwardsPublicKey;
 use ParagonIE\EasyECC\Curve25519\EdwardsSecretKey;
 use ParagonIE\EasyECC\Curve25519\X25519;
+use ParagonIE\EasyECC\ECDSA\SecretKey;
+use ParagonIE\EasyECC\ECDSA\Signature;
 use ParagonIE\EasyECC\Exception\ConfigException;
+use ParagonIE\EasyECC\Exception\NotImplementedException;
 
 /**
  * Class EasyECC
@@ -27,7 +30,13 @@ use ParagonIE\EasyECC\Exception\ConfigException;
 class EasyECC
 {
     const CURVES = ['sodium', 'P256', 'P384', 'K256'];
+    const DEFAULT_ECDSA_CURVE = 'P256';
     const DEFAULT_CURVE = 'sodium';
+    const SIGNATURE_SIZES = [
+        'K256' => 64,
+        'P256' => 64,
+        'P384' => 96
+    ];
 
     /** @var string string */
     protected $curve;
@@ -81,6 +90,7 @@ class EasyECC
 
     /**
      * @return PrivateKeyInterface
+     * @throws NotImplementedException
      * @throws \SodiumException
      */
     public function generatePrivateKey(): PrivateKeyInterface
@@ -88,7 +98,7 @@ class EasyECC
         if ($this->curve === 'sodium') {
             return new EdwardsSecretKey(\sodium_crypto_sign_keypair());
         }
-        return $this->generator->createPrivateKey();
+        return SecretKey::generate($this->curve);
     }
 
     /**
@@ -167,12 +177,16 @@ class EasyECC
     /**
      * @param string $message
      * @param PrivateKeyInterface $privateKey
+     * @param bool $ieeeFormat Set to TRUE for IEEE-P1363 formatted signatures
      * @return string
+     *
+     * @throws \SodiumException
      * @throws \TypeError
      */
     public function sign(
         string $message,
-        PrivateKeyInterface $privateKey
+        PrivateKeyInterface $privateKey,
+        bool $ieeeFormat = false
     ): string {
         if ($this->curve === 'sodium') {
             if ($privateKey instanceof EdwardsSecretKey) {
@@ -193,6 +207,10 @@ class EasyECC
         $signer = new Signer($this->adapter);
         $signature = $signer->sign($privateKey, $hash, $k);
 
+        if ($ieeeFormat) {
+            return (Signature::promote($signature))
+                ->toString(self::SIGNATURE_SIZES[$this->curve]);
+        }
         $serializer = new DerSignatureSerializer();
         return $serializer->serialize($signature);
     }
@@ -201,14 +219,18 @@ class EasyECC
      * @param string $message
      * @param PublicKeyInterface $publicKey
      * @param string $signature
+     * @param bool $ieeeFormat Set to TRUE for IEEE-P1363 formatted signatures
      * @return bool
+     *
      * @throws ParserException
+     * @throws \SodiumException
      * @throws \TypeError
      */
     public function verify(
         string $message,
         PublicKeyInterface $publicKey,
-        string $signature
+        string $signature,
+        bool $ieeeFormat = false
     ): bool {
         if ($this->curve === 'sodium') {
             if ($publicKey instanceof EdwardsPublicKey) {
@@ -222,12 +244,35 @@ class EasyECC
             }
         }
 
-        $sigSerializer = new DerSignatureSerializer();
-        $sig = $sigSerializer->parse($signature);
+        if ($ieeeFormat) {
+            $sig = Signature::fromString($signature);
+        } else {
+            $sigSerializer = new DerSignatureSerializer();
+            $sig = $sigSerializer->parse($signature);
+        }
 
         $hash = $this->hasher->makeHash($message, $this->generator);
         $signer = new Signer($this->adapter);
 
         return $signer->verify($publicKey, $sig, $hash);
+    }
+
+    /**
+     * @param string $curve
+     * @return GeneratorPoint
+     * @throws NotImplementedException
+     */
+    public static function getGenerator(string $curve = self::DEFAULT_ECDSA_CURVE): GeneratorPoint
+    {
+        switch ($curve) {
+            case 'K256':
+                return CurveFactory::getGeneratorByName('secp256k1');
+            case 'P256':
+                return EccFactory::getNistCurves()->generator256();
+            case 'P384':
+                return EccFactory::getNistCurves()->generator384();
+            default:
+                throw new NotImplementedException('This curve is not supported');
+        }
     }
 }
