@@ -45,7 +45,7 @@ class SecretKey extends PrivateKey
     public static function generate(string $curve = EasyECC::DEFAULT_ECDSA_CURVE): self
     {
         $generator = EasyECC::getGenerator($curve);
-        $sk = $generator->createPrivateKey();
+        $sk = EasyECC::getGenerator($curve, true)->createPrivateKey();
         $adapter = new GmpMath();
         return new self($adapter, $generator, $sk->getSecret());
     }
