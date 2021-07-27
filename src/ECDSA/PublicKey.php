@@ -12,7 +12,9 @@ use Mdanter\Ecc\Serializer\Point\CompressedPointSerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
 use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\EasyECC\EasyECC;
+use ParagonIE\EasyECC\Exception\InvalidPublicKeyException;
 
 /**
  * Class PublicKey
@@ -39,8 +41,8 @@ class PublicKey extends BasePublicKey
         $adapter = new GmpMath();
         $serializer = new PublicKeyDerParser($adapter);
 
-        $encoded = preg_replace('/-----(BEGIN|END) .+? PUBLIC KEY-----/', '', $encoded);
-        $encoded = preg_replace('/[^A-Za-z0-9\+\/]/', '', $encoded);
+        $encoded = preg_replace('/-+(BEGIN|END).+?PUBLIC KEY-+/', '', $encoded);
+        $encoded = preg_replace('/[^A-Za-z0-9+\/]/', '', $encoded);
 
         $data = Base64::decode($encoded);
         return self::promote($serializer->parse($data));
@@ -78,6 +80,8 @@ class PublicKey extends BasePublicKey
      * @param string $hexString
      * @param string $curve
      * @return PublicKey
+     *
+     * @throws InvalidPublicKeyException
      */
     public static function fromString(
         string $hexString,
@@ -87,18 +91,30 @@ class PublicKey extends BasePublicKey
         switch ($curve) {
             case 'K256':
                 $generator = CurveFactory::getGeneratorByName('secp256k1');
+                $namedCurve = $generator->getCurve();
+                if (Binary::safeStrlen($hexString) !== 66) {
+                    throw new InvalidPublicKeyException('Public key is the wrong size for ' . $curve);
+                }
                 break;
             case 'P256':
                 $generator = EccFactory::getNistCurves()->generator256();
+                $namedCurve = EccFactory::getNistCurves()->curve256();
+                if (Binary::safeStrlen($hexString) !== 66) {
+                    throw new InvalidPublicKeyException('Public key is  the wrong size for ' . $curve);
+                }
                 break;
             case 'P384':
                 $generator = EccFactory::getNistCurves()->generator384();
+                $namedCurve = EccFactory::getNistCurves()->curve384();
+                if (Binary::safeStrlen($hexString) !== 98) {
+                    throw new InvalidPublicKeyException('Public key is  the wrong size for ' . $curve);
+                }
                 break;
             default:
                 throw new \TypeError('This can only be used with ECDSA keys');
         }
         $serializer = new CompressedPointSerializer($adapter);
-        $point = $serializer->unserialize($generator->getCurve(), $hexString);
+        $point = $serializer->unserialize($namedCurve, $hexString);
         return new self($adapter, $generator, $point);
     }
 }

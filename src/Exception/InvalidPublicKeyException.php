@@ -3,10 +3,10 @@ declare(strict_types=1);
 namespace ParagonIE\EasyECC\Exception;
 
 /**
- * Class ConfigException
+ * Class InvalidPublicKeyException
  * @package ParagonIE\EasyECC\Exception
  */
-class ConfigException extends EasyEccException
+class InvalidPublicKeyException extends EasyEccException
 {
 
 }

@@ -6,7 +6,7 @@ namespace ParagonIE\EasyECC\Exception;
  * Class NotImplementedException
  * @package ParagonIE\EasyECC\Exception
  */
-class NotImplementedException extends \Exception
+class NotImplementedException extends EasyEccException
 {
 
 }
