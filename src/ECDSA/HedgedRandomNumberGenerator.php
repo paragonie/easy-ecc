@@ -7,6 +7,7 @@ use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Random\RandomNumberGeneratorInterface;
 use Mdanter\Ecc\Util\BinaryString;
 use Mdanter\Ecc\Util\NumberSize;
+use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\Exception\EasyEccException;
 
 /**
@@ -154,7 +155,7 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
                 return $k;
             }
 
-            $k = hex2bin(gmp_strval($k, 16));
+            $k = Hex::decode(gmp_strval($k, 16));
             $k = hash_hmac($this->algorithm, $v . "\x00", $k, true);
             $v = hash_hmac($this->algorithm, $v, $k, true);
         }
