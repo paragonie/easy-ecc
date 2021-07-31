@@ -11,13 +11,14 @@ use Mdanter\Ecc\Curves\CurveFactory;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Primitives\GeneratorPoint;
-use Mdanter\Ecc\Random\RandomGeneratorFactory;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use Mdanter\Ecc\Util\NumberSize;
 use ParagonIE\EasyECC\Curve25519\EdwardsPublicKey;
 use ParagonIE\EasyECC\Curve25519\EdwardsSecretKey;
 use ParagonIE\EasyECC\Curve25519\X25519;
+use ParagonIE\EasyECC\ECDSA\ConstantTimeMath;
+use ParagonIE\EasyECC\ECDSA\HedgedRandomNumberGenerator;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\EasyECC\ECDSA\Signature;
 use ParagonIE\EasyECC\Exception\ConfigException;
@@ -200,11 +201,17 @@ class EasyECC
         }
         $hash = $this->hasher->makeHash($message, $this->generator);
 
-        // RFC 6979
-        $kGen = RandomGeneratorFactory::getHmacRandomGenerator($privateKey, $hash, $this->hashAlgo);
+        // RFC 6979 with additional randomness
+        $kGen = new HedgedRandomNumberGenerator(
+            EccFactory::getAdapter(),
+            $privateKey,
+            $hash,
+            'sha384'
+        );
         $k = $kGen->generate($this->generator->getOrder());
 
-        $signer = new Signer($this->adapter);
+        // We care about leaking the one-time secret:
+        $signer = new Signer(new ConstantTimeMath());
         $signature = $signer->sign($privateKey, $hash, $k);
 
         if ($ieeeFormat) {
@@ -252,6 +259,8 @@ class EasyECC
         }
 
         $hash = $this->hasher->makeHash($message, $this->generator);
+
+        // This can safely be variable-time:
         $signer = new Signer($this->adapter);
 
         return $signer->verify($publicKey, $sig, $hash);
@@ -259,17 +268,26 @@ class EasyECC
 
     /**
      * @param string $curve
+     * @param bool $constantTime
      * @return GeneratorPoint
      * @throws NotImplementedException
      */
-    public static function getGenerator(string $curve = self::DEFAULT_ECDSA_CURVE): GeneratorPoint
-    {
+    public static function getGenerator(
+        string $curve = self::DEFAULT_ECDSA_CURVE,
+        bool $constantTime = false
+    ): GeneratorPoint {
         switch ($curve) {
             case 'K256':
                 return CurveFactory::getGeneratorByName('secp256k1');
             case 'P256':
+                if ($constantTime) {
+                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator256();
+                }
                 return EccFactory::getNistCurves()->generator256();
             case 'P384':
+                if ($constantTime) {
+                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator384();
+                }
                 return EccFactory::getNistCurves()->generator384();
             default:
                 throw new NotImplementedException('This curve is not supported');
