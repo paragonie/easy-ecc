@@ -71,5 +71,8 @@ class P384Test extends TestCase
         $sig = $this->ecc->sign($message, $sk);
         $this->assertTrue($this->ecc->verify($message, $pk, $sig));
         $this->assertFalse($this->ecc->verify('samplf', $pk, $sig));
+
+        $sig = $this->ecc->sign($message, $sk, true);
+        $this->assertTrue($this->ecc->verify($message, $pk, $sig, true));
     }
 }

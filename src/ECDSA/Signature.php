@@ -6,6 +6,7 @@ use Mdanter\Ecc\Crypto\Signature\Signature as BaseSignature;
 use Mdanter\Ecc\Crypto\Signature\SignatureInterface;
 use Mdanter\Ecc\Exception\SignatureDecodeException;
 use Mdanter\Ecc\Util\BinaryString;
+use ParagonIE\ConstantTime\Binary;
 
 /**
  * Class Signature
@@ -23,7 +24,7 @@ class Signature extends BaseSignature
     {
         $r = gmp_strval($this->getR(), 16);
         $s = gmp_strval($this->getS(), 16);
-        $len = max(strlen($r), strlen($s), $length >> 1);
+        $len = max(Binary::safeStrlen($r), Binary::safeStrlen($s), $length);
         return str_pad($r, $len, '0', STR_PAD_LEFT) .
             str_pad($s, $len, '0', STR_PAD_LEFT);
     }
