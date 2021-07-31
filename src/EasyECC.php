@@ -11,7 +11,6 @@ use Mdanter\Ecc\Curves\CurveFactory;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Primitives\GeneratorPoint;
-use Mdanter\Ecc\Random\RandomGeneratorFactory;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use Mdanter\Ecc\Util\NumberSize;
@@ -19,6 +18,7 @@ use ParagonIE\EasyECC\Curve25519\EdwardsPublicKey;
 use ParagonIE\EasyECC\Curve25519\EdwardsSecretKey;
 use ParagonIE\EasyECC\Curve25519\X25519;
 use ParagonIE\EasyECC\ECDSA\ConstantTimeMath;
+use ParagonIE\EasyECC\ECDSA\HedgedRandomNumberGenerator;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\EasyECC\ECDSA\Signature;
 use ParagonIE\EasyECC\Exception\ConfigException;
@@ -201,8 +201,13 @@ class EasyECC
         }
         $hash = $this->hasher->makeHash($message, $this->generator);
 
-        // RFC 6979
-        $kGen = RandomGeneratorFactory::getHmacRandomGenerator($privateKey, $hash, $this->hashAlgo);
+        // RFC 6979 with additional randomness
+        $kGen = new HedgedRandomNumberGenerator(
+            EccFactory::getAdapter(),
+            $privateKey,
+            $hash,
+            'sha384'
+        );
         $k = $kGen->generate($this->generator->getOrder());
 
         // We care about leaking the one-time secret:
