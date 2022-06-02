@@ -168,7 +168,7 @@ class DefuseTest extends TestCase
         );
     }
 
-    private function easyEccCurves()
+    public function easyEccCurves(): array
     {
         return [
             [new EasyECC()],
@@ -182,7 +182,7 @@ class DefuseTest extends TestCase
     /**
      * @dataProvider easyEccCurves
      */
-    public function testSeal(EasyECC $ecc)
+    public function testSeal(EasyECC $ecc): void
     {
         $defuse = new Defuse($ecc);
         $alice_sk = $ecc->generatePrivateKey();

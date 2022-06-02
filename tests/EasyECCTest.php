@@ -18,7 +18,7 @@ class EasyECCTest extends TestCase
         $this->assertSame('sodium', $ecc->getCurveName());
     }
 
-    private function easyEccCurves()
+    public function easyEccCurves()
     {
         return [
             [new EasyECC()],
@@ -36,7 +36,7 @@ class EasyECCTest extends TestCase
      * @throws NotImplementedException
      * @throws SodiumException
      */
-    public function testCongruentOps(EasyECC $ecc)
+    public function testCongruentOps(EasyECC $ecc): void
     {
         $aliceSK = $ecc->generatePrivateKey();
         /** @var PublicKey $alicePK */
