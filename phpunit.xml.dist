@@ -16,4 +16,8 @@
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <!-- (E_ALL ^ E_DEPRECATED) === 24575 -->
+        <ini name="error_reporting" value="24575" />
+    </php>
 </phpunit>
