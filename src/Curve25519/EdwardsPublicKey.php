@@ -42,6 +42,14 @@ class EdwardsPublicKey implements PublicKeyInterface
     }
 
     /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->publicKey;
+    }
+
+    /**
      * @return CurveFpInterface
      * @throws NotImplementedException
      */

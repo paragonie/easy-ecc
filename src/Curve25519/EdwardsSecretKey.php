@@ -47,6 +47,14 @@ class EdwardsSecretKey implements PrivateKeyInterface
     }
 
     /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->secretKey;
+    }
+
+    /**
      * @return MontgomerySecretKey
      * @throws \SodiumException
      */

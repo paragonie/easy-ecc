@@ -274,6 +274,16 @@ class EasyECC
     }
 
     /**
+     * Which curve was this instantiated with?
+     *
+     * @return string
+     */
+    public function getCurveName(): string
+    {
+        return $this->curve;
+    }
+
+    /**
      * @param string $curve
      * @param bool $constantTime
      * @return GeneratorPoint

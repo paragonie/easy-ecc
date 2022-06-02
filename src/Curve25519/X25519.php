@@ -61,12 +61,12 @@ class X25519 implements EcDHInterface
         $s_pk = $this->sk->getPublicKey();
 
         if ($isClient) {
-            return \ParagonIE_Sodium_Compat::crypto_kx_client_session_keys(
+            return \sodium_crypto_kx_client_session_keys(
                 $this->sk->getAsString() . $s_pk->getAsString(),
                 $this->pk->getAsString()
             )[0];
         }
-        return \ParagonIE_Sodium_Compat::crypto_kx_server_session_keys(
+        return \sodium_crypto_kx_server_session_keys(
             $this->sk->getAsString() . $s_pk->getAsString(),
             $this->pk->getAsString()
         )[1];
