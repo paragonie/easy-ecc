@@ -72,7 +72,7 @@ use ParagonIE\EasyECC\EasyECC;
 $ecc = new EasyECC('P384');
 ```
 
-#### NIST P521 + SHA521
+#### NIST P521 + SHA512
 
 ```php
 <?php
