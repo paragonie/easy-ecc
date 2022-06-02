@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\EasyECC\Tests;
 
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\EasyECC;
 use ParagonIE\EasyECC\ECDSA\PublicKey;
@@ -17,7 +18,7 @@ class EasyECCTest extends TestCase
         $this->assertSame('sodium', $ecc->getCurveName());
     }
 
-    private function easyEccCurves()
+    public function easyEccCurves()
     {
         return [
             [new EasyECC()],
@@ -35,7 +36,7 @@ class EasyECCTest extends TestCase
      * @throws NotImplementedException
      * @throws SodiumException
      */
-    public function testCongruentOps(EasyECC $ecc)
+    public function testCongruentOps(EasyECC $ecc): void
     {
         $aliceSK = $ecc->generatePrivateKey();
         /** @var PublicKey $alicePK */
@@ -50,6 +51,8 @@ class EasyECCTest extends TestCase
         $bobSK = $ecc->generatePrivateKey();
         /** @var PublicKey $bobPK */
         $bobPK = $bobSK->getPublicKey();
+
+        $this->assertSame($ecc->getPublicKeyLength(), Binary::safeStrlen($bobPK->toString()));
 
         $this->assertNotSame(
             $alicePK->toString(),
