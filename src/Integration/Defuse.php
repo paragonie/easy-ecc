@@ -10,13 +10,21 @@ use Defuse\Crypto\Key;
 use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use ParagonIE\ConstantTime\Binary;
+use ParagonIE\ConstantTime\Hex;
+use ParagonIE\EasyECC\Curve25519\EdwardsPublicKey;
 use ParagonIE\EasyECC\EasyECC;
+use ParagonIE\EasyECC\ECDSA\PublicKey;
+use ParagonIE\EasyECC\EncryptionInterface;
+use ParagonIE\EasyECC\Exception\InvalidPublicKeyException;
+use ParagonIE\EasyECC\Exception\NotImplementedException;
+use SodiumException;
 
 /**
  * Class Defuse
  * @package ParagonIE\EasyECC\Integration
  */
-class Defuse
+class Defuse implements EncryptionInterface
 {
     /** @var EasyECC $ecc */
     protected $ecc;
@@ -129,5 +137,58 @@ class Defuse
             $key,
             true
         );
+    }
+
+    /**
+     * @param string $message
+     * @param PublicKeyInterface $publicKey
+     * @return string
+     *
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws NotImplementedException
+     * @throws SodiumException
+     */
+    public function seal(
+        string $message,
+        PublicKeyInterface $publicKey
+    ): string {
+        $ephSK = $this->ecc->generatePrivateKey();
+        /** @var PublicKey|EdwardsPublicKey $ephPK */
+        $ephPK = $ephSK->getPublicKey();
+        $encrypted = $this->asymmetricEncrypt($message, $ephSK, $publicKey);
+        return $ephPK->toString() . $encrypted;
+    }
+
+    /**
+     * @param string $message
+     * @param PrivateKeyInterface $privateKey
+     * @return string
+     *
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws InvalidPublicKeyException
+     * @throws NotImplementedException
+     * @throws SodiumException
+     * @throws WrongKeyOrModifiedCiphertextException
+     */
+    public function unseal(
+        string $message,
+        PrivateKeyInterface $privateKey
+    ): string {
+        $pkLen = $this->ecc->getPublicKeyLength();
+        $pubKey = Binary::safeSubstr($message, 0, $pkLen);
+        $ciphertext = Binary::safeSubstr($message, $pkLen);
+
+        /** @var PublicKey|EdwardsPublicKey $ephPK */
+        if ($this->ecc->getCurveName() === 'sodium') {
+            $ephPK = EdwardsPublicKey::fromString($pubKey);
+        } else {
+            $ephPK = PublicKey::fromString(
+                $pubKey,
+                $this->ecc->getCurveName()
+            );
+        }
+        return $this->asymmetricDecrypt($ciphertext, $privateKey, $ephPK);
     }
 }

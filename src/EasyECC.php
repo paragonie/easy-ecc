@@ -284,6 +284,27 @@ class EasyECC
     }
 
     /**
+     * @return int
+     * @throws NotImplementedException
+     */
+    public function getPublicKeyLength(): int
+    {
+        switch ($this->curve) {
+            case 'sodium':
+                return 64;
+            case 'K256':
+            case 'P256':
+                return 66;
+            case 'P384':
+                return 98;
+            case 'P521':
+                return 134;
+            default:
+                throw new NotImplementedException("Unknown curve");
+        }
+    }
+
+    /**
      * @param string $curve
      * @param bool $constantTime
      * @return GeneratorPoint

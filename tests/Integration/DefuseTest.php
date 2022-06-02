@@ -25,6 +25,9 @@ class DefuseTest extends TestCase
     /** @var EasyECC $p384 */
     protected $p384;
 
+    /** @var EasyECC $p521 */
+    protected $p521;
+
     /** @var EasyECC $sodium */
     protected $sodium;
 
@@ -36,6 +39,7 @@ class DefuseTest extends TestCase
         $this->k256 = new EasyECC('K256');
         $this->p256 = new EasyECC('P256');
         $this->p384 = new EasyECC('P384');
+        $this->p521 = new EasyECC('P521');
         $this->sodium = new EasyECC();
     }
 
@@ -121,6 +125,31 @@ class DefuseTest extends TestCase
      * @throws \SodiumException
      * @throws \TypeError
      */
+    public function testAsymmetricEncryptP521()
+    {
+        $alice_sk = $this->p521->generatePrivateKey();
+        $alice_pk = $alice_sk->getPublicKey();
+        $bob_sk = $this->p521->generatePrivateKey();
+        $bob_pk = $bob_sk->getPublicKey();
+
+        $defuse = new Defuse($this->p521);
+
+        $message = 'This is a test message.';
+        $ciphertext = $defuse->asymmetricEncrypt($message, $alice_sk, $bob_pk);
+
+        $this->assertSame(
+            $message,
+            $defuse->asymmetricDecrypt($ciphertext, $bob_sk, $alice_pk)
+        );
+    }
+
+    /**
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
+     * @throws WrongKeyOrModifiedCiphertextException
+     * @throws \SodiumException
+     * @throws \TypeError
+     */
     public function testAsymmetricEncryptSodium()
     {
         $alice_sk = $this->sodium->generatePrivateKey();
@@ -137,5 +166,35 @@ class DefuseTest extends TestCase
             $message,
             $defuse->asymmetricDecrypt($ciphertext, $bob_sk, $alice_pk)
         );
+    }
+
+    private function easyEccCurves()
+    {
+        return [
+            [new EasyECC()],
+            [new EasyECC('K256')],
+            [new EasyECC('P256')],
+            [new EasyECC('P384')],
+            [new EasyECC('P521')],
+        ];
+    }
+
+    /**
+     * @dataProvider easyEccCurves
+     */
+    public function testSeal(EasyECC $ecc)
+    {
+        $defuse = new Defuse($ecc);
+        $alice_sk = $ecc->generatePrivateKey();
+        $alice_pk = $alice_sk->getPublicKey();
+
+        $message = 'This is a test message.';
+        $sealed1 = $defuse->seal($message, $alice_pk);
+        $sealed2 = $defuse->seal($message, $alice_pk);
+        $this->assertNotSame($sealed1, $sealed2, 'Ciphertexts must not be the same');
+
+        $unsealed1 = $defuse->unseal($sealed1, $alice_sk);
+        $unsealed2 = $defuse->unseal($sealed2, $alice_sk);
+        $this->assertSame($unsealed1, $unsealed2, 'Plaintexts should be the same');
     }
 }
