@@ -24,7 +24,8 @@ class SignatureTest extends TestCase
     const PUBKEY_SIZES = [
         'K256' => 33,
         'P256' => 33,
-        'P384' => 49
+        'P384' => 49,
+        'P521' => 67
     ];
 
     /**

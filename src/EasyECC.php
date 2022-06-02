@@ -30,13 +30,14 @@ use ParagonIE\EasyECC\Exception\NotImplementedException;
  */
 class EasyECC
 {
-    const CURVES = ['sodium', 'P256', 'P384', 'K256'];
+    const CURVES = ['sodium', 'P256', 'P384', 'P521', 'K256'];
     const DEFAULT_ECDSA_CURVE = 'P256';
     const DEFAULT_CURVE = 'sodium';
     const SIGNATURE_SIZES = [
         'K256' => 64,
         'P256' => 64,
-        'P384' => 96
+        'P384' => 96,
+        'P521' => 132
     ];
 
     /** @var string string */
@@ -82,6 +83,12 @@ class EasyECC
                 $this->adapter = EccFactory::getAdapter();
                 $this->generator = EccFactory::getNistCurves()->generator384();
                 $this->hashAlgo = 'sha384';
+                $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
+                break;
+            case 'P521':
+                $this->adapter = EccFactory::getAdapter();
+                $this->generator = EccFactory::getNistCurves()->generator521();
+                $this->hashAlgo = 'sha512';
                 $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
                 break;
             case 'sodium':
@@ -289,6 +296,11 @@ class EasyECC
                     return EccFactory::getNistCurves(new ConstantTimeMath())->generator384();
                 }
                 return EccFactory::getNistCurves()->generator384();
+            case 'P521':
+                if ($constantTime) {
+                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator521();
+                }
+                return EccFactory::getNistCurves()->generator521();
             default:
                 throw new NotImplementedException('This curve is not supported');
         }
