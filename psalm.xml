@@ -2,7 +2,6 @@
 <psalm
     name="Easy-ECC"
     useDocblockTypes="true"
-    totallyTyped="true"
 >
     <projectFiles>
         <directory name="src" />
