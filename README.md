@@ -72,6 +72,15 @@ use ParagonIE\EasyECC\EasyECC;
 $ecc = new EasyECC('P384');
 ```
 
+#### NIST P521 + SHA521
+
+```php
+<?php
+use ParagonIE\EasyECC\EasyECC;
+
+$ecc = new EasyECC('P521');
+```
+
 ### ECDSA-Specific Features
 
 ```php
