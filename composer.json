@@ -30,7 +30,7 @@
     "ext-gmp": "*",
     "defuse/php-encryption": "^2.1",
     "mdanter/ecc": "^1",
-    "paragonie/sodium_compat": "^1.16",
+    "paragonie/sodium_compat": "^1|^2",
     "paragonie/constant_time_encoding": "^2.1"
   },
   "require-dev": {

@@ -43,7 +43,7 @@ class X25519 implements EcDHInterface
      */
     public function scalarMult(): string
     {
-        return \ParagonIE_Sodium_Compat::crypto_scalarmult(
+        return \sodium_crypto_scalarmult(
             $this->sk->getAsString(),
             $this->pk->getAsString()
         );
