@@ -22,6 +22,7 @@ use ParagonIE\EasyECC\ECDSA\HedgedRandomNumberGenerator;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\EasyECC\ECDSA\Signature;
 use ParagonIE\EasyECC\Exception\ConfigException;
+use ParagonIE\EasyECC\Exception\EasyEccException;
 use ParagonIE\EasyECC\Exception\NotImplementedException;
 
 /**
@@ -218,7 +219,7 @@ class EasyECC
         $k = $kGen->generate($this->generator->getOrder());
 
         // We care about leaking the one-time secret:
-        $signer = new Signer(new ConstantTimeMath());
+        $signer = new Signer(new ConstantTimeMath(), true);
         $signature = $signer->sign($privateKey, $hash, $k);
 
         if ($ieeeFormat) {
@@ -268,7 +269,7 @@ class EasyECC
         $hash = $this->hasher->makeHash($message, $this->generator);
 
         // This can safely be variable-time:
-        $signer = new Signer($this->adapter);
+        $signer = new Signer($this->adapter, true);
 
         return $signer->verify($publicKey, $sig, $hash);
     }
