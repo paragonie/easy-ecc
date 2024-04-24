@@ -6,7 +6,7 @@
 [![License](https://poser.pugx.org/paragonie/easy-ecc/license)](https://packagist.org/packages/paragonie/easy-ecc)
 [![Downloads](https://img.shields.io/packagist/dt/paragonie/easy-ecc.svg)](https://packagist.org/packages/paragonie/easy-ecc)
 
-A usability wrapper for [PHP ECC](https://github.com/phpecc/phpecc)
+A usability wrapper for [PHP ECC](https://github.com/paragonie/phpecc)
 that also further hardens against timing attacks.
 
 ## Installing
