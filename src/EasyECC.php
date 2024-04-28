@@ -11,6 +11,7 @@ use Mdanter\Ecc\Curves\CurveFactory;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Primitives\GeneratorPoint;
+use Mdanter\Ecc\Random\RandomGeneratorFactory;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use Mdanter\Ecc\Util\NumberSize;
@@ -76,13 +77,19 @@ class EasyECC
                 break;
             case 'P256':
                 $this->adapter = EccFactory::getAdapter();
-                $this->generator = EccFactory::getNistCurves()->generator256();
+                $this->generator = EccFactory::getNistCurves()->generator256(
+                    RandomGeneratorFactory::getRandomGenerator(),
+                    true
+                );
                 $this->hashAlgo = 'sha256';
                 $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
                 break;
             case 'P384':
                 $this->adapter = EccFactory::getAdapter();
-                $this->generator = EccFactory::getNistCurves()->generator384();
+                $this->generator = EccFactory::getNistCurves()->generator384(
+                    RandomGeneratorFactory::getRandomGenerator(),
+                    true
+                );
                 $this->hashAlgo = 'sha384';
                 $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
                 break;
@@ -320,12 +327,18 @@ class EasyECC
                 return CurveFactory::getGeneratorByName('secp256k1');
             case 'P256':
                 if ($constantTime) {
-                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator256();
+                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator256(
+                        RandomGeneratorFactory::getRandomGenerator(),
+                        true
+                    );
                 }
                 return EccFactory::getNistCurves()->generator256();
             case 'P384':
                 if ($constantTime) {
-                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator384();
+                    return EccFactory::getNistCurves(new ConstantTimeMath())->generator384(
+                        RandomGeneratorFactory::getRandomGenerator(),
+                        true
+                    );
                 }
                 return EccFactory::getNistCurves()->generator384();
             case 'P521':

@@ -141,7 +141,7 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
         $v = hash_hmac($this->algorithm, $v, $k, true);
 
         $t = '';
-        for (;;) {
+        for ($tries = 0; $tries < 1024; ++$tries) {
             $toff = gmp_init(0, 10);
             while ($this->math->cmp($toff, $rlen) < 0) {
                 $v = hash_hmac($this->algorithm, $v, $k, true);
