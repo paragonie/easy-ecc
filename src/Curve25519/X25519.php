@@ -96,7 +96,7 @@ class X25519 implements EcDHInterface
      * Sets the sender's key.
      *
      * @param PrivateKeyInterface $key
-     * @return void
+     * @return self
      * @throws \SodiumException
      * @throws \TypeError
      */
@@ -109,13 +109,14 @@ class X25519 implements EcDHInterface
         } else {
             throw new \TypeError('Only libsodium keys are allowed');
         }
+        return $this;
     }
 
     /**
      * Sets the recipient key.
      *
      * @param  PublicKeyInterface $key
-     * @return void
+     * @return self
      * @throws \SodiumException
      * @throws \TypeError
      */
@@ -128,5 +129,6 @@ class X25519 implements EcDHInterface
         } else {
             throw new \TypeError('Only libsodium keys are allowed');
         }
+        return $this;
     }
 }
