@@ -29,7 +29,7 @@
     "php": "^7.1|^8",
     "ext-gmp": "*",
     "defuse/php-encryption": "^2.1",
-    "paragonie/ecc": "^2.1",
+    "paragonie/ecc": "^2.2",
     "paragonie/sodium_compat": "^1|^2",
     "paragonie/constant_time_encoding": "^2.1"
   },
