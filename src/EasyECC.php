@@ -8,6 +8,7 @@ use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Crypto\Signature\Signer;
 use Mdanter\Ecc\Crypto\Signature\SignHasher;
 use Mdanter\Ecc\Curves\CurveFactory;
+use Mdanter\Ecc\Curves\SecureCurveFactory;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Primitives\GeneratorPoint;
@@ -23,7 +24,6 @@ use ParagonIE\EasyECC\ECDSA\HedgedRandomNumberGenerator;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\EasyECC\ECDSA\Signature;
 use ParagonIE\EasyECC\Exception\ConfigException;
-use ParagonIE\EasyECC\Exception\EasyEccException;
 use ParagonIE\EasyECC\Exception\NotImplementedException;
 
 /**
@@ -71,13 +71,13 @@ class EasyECC
         switch ($curve) {
             case 'K256':
                 $this->adapter = EccFactory::getAdapter();
-                $this->generator = CurveFactory::getGeneratorByName('secp256k1');
+                $this->generator = SecureCurveFactory::getGeneratorByName('secp256k1');
                 $this->hashAlgo = 'sha256';
                 $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
                 break;
             case 'P256':
                 $this->adapter = EccFactory::getAdapter();
-                $this->generator = EccFactory::getNistCurves()->generator256(
+                $this->generator = EccFactory::getNistCurves($this->adapter)->generator256(
                     RandomGeneratorFactory::getRandomGenerator(),
                     true
                 );
@@ -86,7 +86,7 @@ class EasyECC
                 break;
             case 'P384':
                 $this->adapter = EccFactory::getAdapter();
-                $this->generator = EccFactory::getNistCurves()->generator384(
+                $this->generator = EccFactory::getNistCurves($this->adapter)->generator384(
                     RandomGeneratorFactory::getRandomGenerator(),
                     true
                 );
@@ -95,7 +95,7 @@ class EasyECC
                 break;
             case 'P521':
                 $this->adapter = EccFactory::getAdapter();
-                $this->generator = EccFactory::getNistCurves()->generator521();
+                $this->generator = EccFactory::getNistCurves($this->adapter)->generator521();
                 $this->hashAlgo = 'sha512';
                 $this->hasher = new SignHasher($this->hashAlgo, $this->adapter);
                 break;

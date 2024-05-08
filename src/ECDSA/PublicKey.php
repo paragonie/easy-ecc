@@ -90,29 +90,29 @@ class PublicKey extends BasePublicKey
         $adapter = EccFactory::getAdapter();
         switch ($curve) {
             case 'K256':
-                $generator = CurveFactory::getGeneratorByName('secp256k1');
+                $generator = EccFactory::getSecgCurves()->generator256k1(null, true);
                 $namedCurve = $generator->getCurve();
                 if (Binary::safeStrlen($hexString) !== 66) {
                     throw new InvalidPublicKeyException('Public key is the wrong size for ' . $curve);
                 }
                 break;
             case 'P256':
-                $generator = EccFactory::getNistCurves()->generator256();
-                $namedCurve = EccFactory::getNistCurves()->curve256();
+                $generator = EccFactory::getNistCurves()->generator256(null, true);
+                $namedCurve = $generator->getCurve();
                 if (Binary::safeStrlen($hexString) !== 66) {
                     throw new InvalidPublicKeyException('Public key is the wrong size for ' . $curve);
                 }
                 break;
             case 'P384':
-                $generator = EccFactory::getNistCurves()->generator384();
-                $namedCurve = EccFactory::getNistCurves()->curve384();
+                $generator = EccFactory::getNistCurves()->generator384(null, true);
+                $namedCurve = $generator->getCurve();
                 if (Binary::safeStrlen($hexString) !== 98) {
                     throw new InvalidPublicKeyException('Public key is the wrong size for ' . $curve);
                 }
                 break;
             case 'P521':
-                $generator = EccFactory::getNistCurves()->generator521();
-                $namedCurve = EccFactory::getNistCurves()->curve521();
+                $generator = EccFactory::getNistCurves()->generator521(null, true);
+                $namedCurve = $generator->getCurve();
                 if (Binary::safeStrlen($hexString) !== 134) {
                     throw new InvalidPublicKeyException('Public key is the wrong size for ' . $curve);
                 }
