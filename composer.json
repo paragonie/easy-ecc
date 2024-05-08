@@ -28,10 +28,10 @@
   "require": {
     "php": "^7.1|^8",
     "ext-gmp": "*",
-    "defuse/php-encryption": "^2.1",
-    "paragonie/ecc": "^2.2",
+    "defuse/php-encryption": "^2.4",
+    "paragonie/ecc": "^2.3",
     "paragonie/sodium_compat": "^1|^2",
-    "paragonie/constant_time_encoding": "^2.1"
+    "paragonie/constant_time_encoding": "^2.7|^3"
   },
   "require-dev": {
     "phpunit/phpunit": "^7|^8|^9",
