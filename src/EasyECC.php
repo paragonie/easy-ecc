@@ -221,7 +221,7 @@ class EasyECC
             EccFactory::getAdapter(),
             $privateKey,
             $hash,
-            'sha384'
+            $this->hashAlgo
         );
         $k = $kGen->generate($this->generator->getOrder());
 
