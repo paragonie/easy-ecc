@@ -11,7 +11,7 @@ use ParagonIE\EasyECC\Exception\NotImplementedException;
  * Class X25519
  * @package ParagonIE\EasyECC\Curve25519
  */
-class X25519 implements EcDHInterface
+final class X25519 implements EcDHInterface
 {
     /** @var MontgomerySecretKey $sk */
     protected $sk;

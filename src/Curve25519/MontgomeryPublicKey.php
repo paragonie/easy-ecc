@@ -13,7 +13,7 @@ use ParagonIE\EasyECC\Exception\NotImplementedException;
  * Class MontgomeryPublicKey
  * @package ParagonIE\EasyECC\Curve25519
  */
-class MontgomeryPublicKey implements PublicKeyInterface
+final class MontgomeryPublicKey implements PublicKeyInterface
 {
     /** @var string $publicKey */
     protected $publicKey;

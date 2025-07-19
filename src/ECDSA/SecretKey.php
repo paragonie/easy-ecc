@@ -18,7 +18,7 @@ use TypeError;
  * @package ParagonIE\EasyECC
  * @salm-api
  */
-class SecretKey extends PrivateKey
+final class SecretKey extends PrivateKey
 {
 
     /**

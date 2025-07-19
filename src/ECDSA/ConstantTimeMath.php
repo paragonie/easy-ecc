@@ -18,7 +18,7 @@ use TypeError;
  *
  * @package ParagonIE\EasyECC\ECDSA
  */
-class ConstantTimeMath extends GmpMath
+final class ConstantTimeMath extends GmpMath
 {
     /**
      * Compare signs. Returns [$gt, $eq].

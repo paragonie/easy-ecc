@@ -6,7 +6,7 @@ namespace ParagonIE\EasyECC\Exception;
  * Class ConfigException
  * @package ParagonIE\EasyECC\Exception
  */
-class ConfigException extends EasyEccException
+final class ConfigException extends EasyEccException
 {
 
 }

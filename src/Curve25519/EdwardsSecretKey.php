@@ -13,7 +13,7 @@ use ParagonIE\EasyECC\Exception\NotImplementedException;
  * Class EdwardsSecretKey
  * @package ParagonIE\EasyECC\Curve25519
  */
-class EdwardsSecretKey implements PrivateKeyInterface
+final class EdwardsSecretKey implements PrivateKeyInterface
 {
     /** @var string $secretKey */
     protected $secretKey;

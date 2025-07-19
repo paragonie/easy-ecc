@@ -16,7 +16,7 @@ use TypeError;
  * Class HedgedRandomNumberGenerator
  * @package ParagonIE\EasyECC\ECDSA
  */
-class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
+final class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
 {
     /**
      * @var GmpMathInterface

@@ -22,7 +22,7 @@ use TypeError;
  * @package ParagonIE\EasyECC
  * @salm-api
  */
-class PublicKey extends BasePublicKey
+final class PublicKey extends BasePublicKey
 {
     /**
      * @return string

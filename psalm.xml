@@ -12,7 +12,6 @@
     </projectFiles>
 
     <issueHandlers>
-        <ClassMustBeFinal errorLevel="info" />
         <PossiblyUnusedMethod errorLevel="info" />
         <PropertyNotSetInConstructor errorLevel="suppress" />
         <UnusedClass errorLevel="info" />
