@@ -23,6 +23,7 @@ use SodiumException;
 /**
  * Class Defuse
  * @package ParagonIE\EasyECC\Integration
+ * @psalm-api
  */
 class Defuse implements EncryptionInterface
 {

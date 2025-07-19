@@ -12,7 +12,7 @@ use ParagonIE\ConstantTime\Binary;
  * Class Signature
  * @package ParagonIE\EasyECC
  */
-class Signature extends BaseSignature
+final class Signature extends BaseSignature
 {
     /**
      * Returns a hexadecimal-encoded signature.

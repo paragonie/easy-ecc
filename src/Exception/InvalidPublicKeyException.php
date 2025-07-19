@@ -6,7 +6,7 @@ namespace ParagonIE\EasyECC\Exception;
  * Class InvalidPublicKeyException
  * @package ParagonIE\EasyECC\Exception
  */
-class InvalidPublicKeyException extends EasyEccException
+final class InvalidPublicKeyException extends EasyEccException
 {
 
 }

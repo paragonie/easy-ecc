@@ -15,12 +15,14 @@ use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\EasyECC\EasyECC;
 use ParagonIE\EasyECC\Exception\InvalidPublicKeyException;
+use TypeError;
 
 /**
  * Class PublicKey
  * @package ParagonIE\EasyECC
+ * @salm-api
  */
-class PublicKey extends BasePublicKey
+final class PublicKey extends BasePublicKey
 {
     /**
      * @return string
@@ -42,7 +44,13 @@ class PublicKey extends BasePublicKey
         $serializer = new PublicKeyDerParser($adapter);
 
         $encoded = preg_replace('/-+(BEGIN|END).+?PUBLIC KEY-+/', '', $encoded);
+        if (!is_string($encoded)) {
+            throw new TypeError('inner preg_replace() returned null instead of string');
+        }
         $encoded = preg_replace('/[^A-Za-z0-9+\/]/', '', $encoded);
+        if (!is_string($encoded)) {
+            throw new TypeError('inner preg_replace() returned null instead of string');
+        }
 
         $data = Base64::decode($encoded);
         return self::promote($serializer->parse($data));
@@ -118,7 +126,7 @@ class PublicKey extends BasePublicKey
                 }
                 break;
             default:
-                throw new \TypeError('This can only be used with ECDSA keys');
+                throw new TypeError('This can only be used with ECDSA keys');
         }
         $serializer = new CompressedPointSerializer($adapter);
         $point = $serializer->unserialize($namedCurve, $hexString);

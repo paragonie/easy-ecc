@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <psalm
     name="Easy-ECC"
+    ensureOverrideAttribute="false"
     useDocblockTypes="true"
 >
     <projectFiles>
@@ -11,6 +12,9 @@
     </projectFiles>
 
     <issueHandlers>
+        <InvalidDocblock errorLevel="info" />
+        <PossiblyUnusedMethod errorLevel="info" />
         <PropertyNotSetInConstructor errorLevel="suppress" />
+        <UnusedClass errorLevel="info" />
     </issueHandlers>
 </psalm>

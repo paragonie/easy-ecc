@@ -14,7 +14,7 @@ use ParagonIE\EasyECC\Exception\NotImplementedException;
  * Class EdwardsPublicKey
  * @package ParagonIE\EasyECC\Curve25519
  */
-class EdwardsPublicKey implements PublicKeyInterface
+final class EdwardsPublicKey implements PublicKeyInterface
 {
     /** @var string $publicKey */
     protected $publicKey;

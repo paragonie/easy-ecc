@@ -11,7 +11,7 @@ use ParagonIE\EasyECC\Exception\NotImplementedException;
  * Class X25519
  * @package ParagonIE\EasyECC\Curve25519
  */
-class X25519 implements EcDHInterface
+final class X25519 implements EcDHInterface
 {
     /** @var MontgomerySecretKey $sk */
     protected $sk;
@@ -100,7 +100,7 @@ class X25519 implements EcDHInterface
      * @throws \SodiumException
      * @throws \TypeError
      */
-    public function setSenderKey(PrivateKeyInterface $key)
+    public function setSenderKey(PrivateKeyInterface $key): EcDHInterface
     {
         if ($key instanceof MontgomerySecretKey) {
             $this->sk = $key;
@@ -120,7 +120,7 @@ class X25519 implements EcDHInterface
      * @throws \SodiumException
      * @throws \TypeError
      */
-    public function setRecipientKey(PublicKeyInterface $key)
+    public function setRecipientKey(PublicKeyInterface $key): EcDHInterface
     {
         if ($key instanceof MontgomeryPublicKey) {
             $this->pk = $key;

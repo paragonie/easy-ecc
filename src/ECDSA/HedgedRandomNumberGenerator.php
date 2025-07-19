@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\EasyECC\ECDSA;
 
+use GMP;
 use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Random\RandomNumberGeneratorInterface;
@@ -9,12 +10,13 @@ use Mdanter\Ecc\Util\BinaryString;
 use Mdanter\Ecc\Util\NumberSize;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\Exception\EasyEccException;
+use TypeError;
 
 /**
  * Class HedgedRandomNumberGenerator
  * @package ParagonIE\EasyECC\ECDSA
  */
-class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
+final class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
 {
     /**
      * @var GmpMathInterface
@@ -32,7 +34,7 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
     private $privateKey;
 
     /**
-     * @var \GMP
+     * @var GMP
      */
     private $messageHash;
 
@@ -52,13 +54,13 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
      *
      * @param GmpMathInterface $math
      * @param PrivateKeyInterface $privateKey
-     * @param \GMP $messageHash - decimal hash of the message (*may* be truncated)
+     * @param GMP $messageHash - decimal hash of the message (*may* be truncated)
      * @param string $algorithm - hashing algorithm
      */
     public function __construct(
         GmpMathInterface $math,
         PrivateKeyInterface $privateKey,
-        \GMP $messageHash,
+        GMP $messageHash,
         string $algorithm
     ) {
         if (!isset($this->algSize[$algorithm])) {
@@ -73,10 +75,10 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
 
     /**
      * @param string $bits - binary string of bits
-     * @param \GMP $qlen - length of q in bits
-     * @return \GMP
+     * @param GMP $qlen - length of q in bits
+     * @return GMP
      */
-    public function bits2int(string $bits, \GMP $qlen): \GMP
+    public function bits2int(string $bits, GMP $qlen): GMP
     {
         $vlen = gmp_init(BinaryString::length($bits) * 8, 10);
         $hex = bin2hex($bits);
@@ -90,13 +92,16 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
     }
 
     /**
-     * @param \GMP $int
-     * @param \GMP $rlen - rounded octet length
+     * @param GMP $int
+     * @param GMP $rlen - rounded octet length
      * @return string
      */
-    public function int2octets(\GMP $int, \GMP $rlen): string
+    public function int2octets(GMP $int, GMP $rlen): string
     {
         $out = pack("H*", $this->math->decHex(gmp_strval($int, 10)));
+        if (!is_string($out)) {
+            throw new TypeError('pack() returned false, somehow');
+        }
         $length = gmp_init(BinaryString::length($out), 10);
         if ($this->math->cmp($length, $rlen) < 0) {
             return str_pad('', (int) $this->math->toString($this->math->sub($rlen, $length)), "\x00") . $out;
@@ -119,10 +124,11 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
     }
 
     /**
-     * @param \GMP $max
-     * @return \GMP
+     * @param GMP $max
+     * @return GMP
+     * @throws EasyEccException
      */
-    public function generate(\GMP $max): \GMP
+    public function generate(GMP $max): GMP
     {
         $qlen = gmp_init(NumberSize::bnNumBits($this->math, $max), 10);
         $rlen = $this->math->rightShift($this->math->add($qlen, gmp_init(7, 10)), 3);
@@ -134,17 +140,17 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
         $v = str_pad('', $hlen >> 3, "\x01", STR_PAD_LEFT);
         $k = str_pad('', $hlen >> 3, "\x00", STR_PAD_LEFT);
 
-        $k = hash_hmac($this->algorithm, $v . "\x00" . $bx, $k, true);
-        $v = hash_hmac($this->algorithm, $v, $k, true);
+        $v = $this->hmac($v . "\x00" . $bx, $k);
+        $v = $this->hmac($v, $k);
 
-        $k = hash_hmac($this->algorithm, $v . "\x01" . $bx, $k, true);
-        $v = hash_hmac($this->algorithm, $v, $k, true);
+        $v = $this->hmac($v . "\x01" . $bx, $k);
+        $v = $this->hmac($v, $k);
 
         $t = '';
         for ($tries = 0; $tries < 1024; ++$tries) {
             $toff = gmp_init(0, 10);
             while ($this->math->cmp($toff, $rlen) < 0) {
-                $v = hash_hmac($this->algorithm, $v, $k, true);
+                $v = $this->hmac($v, $k);
 
                 $cc = min(BinaryString::length($v), (int) gmp_strval(gmp_sub($rlen, $toff), 10));
                 $t .= BinaryString::substring($v, 0, $cc);
@@ -156,9 +162,23 @@ class HedgedRandomNumberGenerator implements RandomNumberGeneratorInterface
             }
 
             $k = Hex::decode(gmp_strval($k, 16));
-            $k = hash_hmac($this->algorithm, $v . "\x00", $k, true);
-            $v = hash_hmac($this->algorithm, $v, $k, true);
+            $v = $this->hmac($v . "\x00", $k);
+            $v = $this->hmac($v, $k);
         }
         throw new EasyEccException('Infinite loop breached');
+    }
+
+    /**
+     * @param string $v
+     * @param string $k
+     * @return string
+     */
+    private function hmac(string $v, string $k): string
+    {
+        $v = hash_hmac($this->algorithm, $v, $k, true);
+        if (!is_string($v)) {
+            throw new TypeError('inner hash_hmac() returned null instead of string');
+        }
+        return $v;
     }
 }

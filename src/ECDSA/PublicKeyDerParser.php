@@ -11,7 +11,7 @@ use Mdanter\Ecc\Serializer\PublicKey\Der\Parser;
  * Class DerParser
  * @package ParagonIE\EasyECC\ECDSA
  */
-class PublicKeyDerParser extends Parser
+final class PublicKeyDerParser extends Parser
 {
     /**
      * @param GeneratorPoint $generator
