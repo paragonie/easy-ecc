@@ -29,13 +29,13 @@
     "php": "^7.1|^8",
     "ext-gmp": "*",
     "defuse/php-encryption": "^2.4",
-    "paragonie/ecc": "^2.3",
+    "paragonie/ecc": "^2.5",
     "paragonie/sodium_compat": "^1|^2",
     "paragonie/constant_time_encoding": "^2.7|^3"
   },
   "require-dev": {
     "phpunit/phpunit": "^7|^8|^9",
-    "vimeo/psalm": "^1|^3|^4|^5"
+    "vimeo/psalm": "^1|^3|^4|^5|^6"
   },
   "scripts": {
     "test": ["phpunit", "psalm"]

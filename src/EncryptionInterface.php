@@ -5,6 +5,9 @@ namespace ParagonIE\EasyECC;
 use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 
+/**
+ * @psalm-api
+ */
 interface EncryptionInterface
 {
     public function __construct(EasyECC $ecc);

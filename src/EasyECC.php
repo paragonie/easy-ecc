@@ -25,10 +25,12 @@ use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\EasyECC\ECDSA\Signature;
 use ParagonIE\EasyECC\Exception\ConfigException;
 use ParagonIE\EasyECC\Exception\NotImplementedException;
+use TypeError;
 
 /**
  * Class EasyECC
  * @package ParagonIE\EasyECC
+ * @psalm-api
  */
 class EasyECC
 {
@@ -149,13 +151,13 @@ class EasyECC
         $sender_pk = $derSer->serialize($private->getPublicKey());
 
         if ($isClient) {
-            return hash(
+            return (string) hash(
                 $hashAlgo,
                 $ss . $sender_pk . $recip_pk,
                 true
             );
         } else {
-            return hash(
+            return (string) hash(
                 $hashAlgo,
                 $ss . $recip_pk . $sender_pk,
                 true

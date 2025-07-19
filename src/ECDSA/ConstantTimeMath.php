@@ -8,6 +8,7 @@ use Mdanter\Ecc\Exception\NumberTheoryException;
 use Mdanter\Ecc\Math\GmpMath;
 use Mdanter\Ecc\Util\BinaryString;
 use ParagonIE\ConstantTime\Hex;
+use TypeError;
 
 /**
  * Class ConstantTimeMath
@@ -262,7 +263,11 @@ class ConstantTimeMath extends GmpMath
      */
     public function ord(string $chr): int
     {
-        return (int) unpack('C', $chr)[1];
+        $packed = unpack('C', $chr);
+        if (!is_array($packed)) {
+            throw new TypeError('unpack() did not return an array');
+        }
+        return (int) $packed[1];
     }
 
     /**
@@ -274,7 +279,7 @@ class ConstantTimeMath extends GmpMath
      */
     public function chr(int $c): string
     {
-        return pack('C', $c);
+        return (string) pack('C', $c);
     }
 
     /**
