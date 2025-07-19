@@ -12,7 +12,7 @@
     </projectFiles>
 
     <issueHandlers>
-        <InvalidDoblock errorLevel="info" />
+        <InvalidDocblock errorLevel="info" />
         <PossiblyUnusedMethod errorLevel="info" />
         <PropertyNotSetInConstructor errorLevel="suppress" />
         <UnusedClass errorLevel="info" />
