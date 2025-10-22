@@ -26,7 +26,7 @@ final class X25519 implements EcDHInterface
      * @throws \SodiumException
      * @throws \TypeError
      */
-    public function __construct(PrivateKeyInterface $sk = null, PublicKeyInterface $pk = null)
+    public function __construct(?PrivateKeyInterface $sk = null, ?PublicKeyInterface $pk = null)
     {
         if ($sk) {
             $this->setSenderKey($sk);
