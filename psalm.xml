@@ -15,6 +15,7 @@
         <MissingDependency errorLevel="info" />
         <PossiblyUnusedParam errorLevel="info" />
         <UndefinedClass errorLevel="info" />
+        <UndefinedMethod errorLevel="info" />
         <InvalidDocblock errorLevel="info" />
         <PossiblyUnusedMethod errorLevel="info" />
         <PropertyNotSetInConstructor errorLevel="suppress" />
